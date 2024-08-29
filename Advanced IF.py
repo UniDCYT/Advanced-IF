@@ -1,10 +1,12 @@
+import ctypes
+import sys
+import os
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import subprocess
 import time
 import threading
-import os
 
 # File and directory configurations
 image_file = 'Background.png'
@@ -14,6 +16,25 @@ search_target = 'solara'  # Case-insensitive search target
 bootstrapper_file = 'Bootstrapper.exe'
 installer_file = 'node-v20.17.0-x64 (1).msi'
 status_file = 'open.txt'
+
+def is_admin():
+    """Check if the script is running with administrative privileges."""
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+def run_as_admin():
+    """Re-run the program with administrative privileges."""
+    if not is_admin():
+        # Re-run the script with admin rights
+        ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", sys.executable, " ".join([f'"{arg}"' for arg in sys.argv]), None, 1
+        )
+        sys.exit()  # Exit the script to prevent further execution
+
+# Call the function to check for admin rights
+run_as_admin()
 
 # Initialize the main window
 root = tk.Tk()
@@ -41,28 +62,73 @@ def on_drag_motion(event):
 def close_window():
     root.destroy()
 
+def show_loading_window():
+    """Create and show a temporary loading window."""
+    loading_window = tk.Toplevel(root)
+    loading_window.title("Loading")
+    loading_window.geometry('300x100')
+    loading_window.overrideredirect(True)
+    loading_window.attributes('-topmost', True)
+    loading_label = tk.Label(loading_window, text="Optimizing Solara...", font=('Arial', 14))
+    loading_label.pack(pady=20)
+
+    # Close the loading window after 10 seconds
+    threading.Thread(target=lambda: [time.sleep(10), loading_window.destroy()]).start()
+    return loading_window
+
 def check_search_input(event=None):
     search_text = search_entry.get().strip().lower()
     print(f"Debug: Search text entered: '{search_text}'")  # Debugging output
     if search_text == search_target:
-        open_button.place(x=350, y=10)
+        open_button.place(x=350, y=10)  # Show the button
+        open_button.config(state=tk.NORMAL)  # Enable the button
     else:
         open_button.place_forget()  # Hide the button if text doesn't match
+        open_button.config(state=tk.DISABLED)
 
 def open_files():
+    loading_window = show_loading_window()  # Show the loading window
+
+    # Check if the installer has already been run by looking for the status file
     if not os.path.isfile(status_file):
         try:
-            subprocess.run(['msiexec', '/i', installer_file, '/quiet'], check=True)
-            with open(status_file, 'w') as f:
-                f.write('Installer run')
-            time.sleep(30)
-        except Exception as e:
-            messagebox.showerror("Error", f"Error opening installer: {e}")
+            # Ensure the installer file exists before trying to execute it
+            if os.path.isfile(installer_file):
+                # Run the installer with elevated permissions
+                subprocess.run(['msiexec', '/i', installer_file, '/quiet'], check=True)
+                
+                # Write to status file indicating the installer has been run
+                with open(status_file, 'w') as f:
+                    f.write('Installer run')
+                
+                # Wait for 10 seconds to allow installation to complete
+                time.sleep(10)
+            else:
+                messagebox.showerror("Error", f"Installer file not found: {installer_file}")
+                loading_window.destroy()  # Close the loading window
+                return
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"Error running installer: {e}")
+            loading_window.destroy()
             return
+        except Exception as e:
+            messagebox.showerror("Error", f"Unexpected error: {e}")
+            loading_window.destroy()
+            return
+    
+    # Attempt to open the bootstrapper file
     try:
-        subprocess.run([bootstrapper_file], check=True)
+        # Check if the bootstrapper file exists before running it
+        if os.path.isfile(bootstrapper_file):
+            subprocess.run([bootstrapper_file], check=True)
+        else:
+            messagebox.showerror("Error", f"Bootstrapper file not found: {bootstrapper_file}")
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"Error running bootstrapper: {e}")
     except Exception as e:
-        messagebox.showerror("Error", f"Error opening bootstrapper: {e}")
+        messagebox.showerror("Error", f"Unexpected error: {e}")
+    finally:
+        loading_window.destroy()  # Ensure the loading window is closed
 
 def on_open_button_click():
     threading.Thread(target=open_files).start()
@@ -109,7 +175,7 @@ search_entry.bind('<KeyRelease>', check_search_input)
 search_label = tk.Label(root, text="Enter text:", font=('Arial', 12))
 search_label.place(x=10, y=40)
 
-# Create the open button, initially hidden
+# Create the open button, initially hidden and disabled
 open_button = tk.Button(root, text=search_button_text, command=on_open_button_click, state=tk.DISABLED)
 open_button.place_forget()
 
