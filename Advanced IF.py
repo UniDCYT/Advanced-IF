@@ -11,6 +11,7 @@ import threading
 # File and directory configurations
 image_file = 'Background.png'
 close_image_file = 'Close.png'
+solara_image_file = 'Solara.png'  # Image file for Solara
 search_button_text = 'Open Solara'
 search_target = 'solara'  # Case-insensitive search target
 bootstrapper_file = 'Bootstrapper.exe'
@@ -80,9 +81,11 @@ def check_search_input(event=None):
     search_text = search_entry.get().strip().lower()
     print(f"Debug: Search text entered: '{search_text}'")  # Debugging output
     if search_text == search_target:
-        open_button.place(x=350, y=10)  # Show the button
+        show_solara_image()  # Display the Solara image and description
+        open_button.place(x=200, y=300)  # Show the button over the image
         open_button.config(state=tk.NORMAL)  # Enable the button
     else:
+        hide_solara_image()  # Hide the Solara image and description
         open_button.place_forget()  # Hide the button if text doesn't match
         open_button.config(state=tk.DISABLED)
 
@@ -135,6 +138,7 @@ def on_open_button_click():
 
 def show_home():
     # Show only the background, search bar, and close button
+    hide_solara_image()
     open_button.place_forget()
     home_button.place_forget()
     search_entry.place(x=10, y=10)
@@ -144,6 +148,17 @@ def show_home():
 def go_to_home():
     home_button.place_forget()
     show_home()
+
+def show_solara_image():
+    """Display the Solara image and description."""
+    solara_image_label.place(x=125, y=120)
+    description_label.place(x=100, y=270)
+    open_button.lift()  # Ensure the button is above the image
+
+def hide_solara_image():
+    """Hide the Solara image and description."""
+    solara_image_label.place_forget()
+    description_label.place_forget()
 
 try:
     # Load and process the background image
@@ -157,6 +172,11 @@ try:
     close_image = Image.open(close_image_file).convert("RGBA")
     close_image = close_image.resize((40, 40))
     close_image = ImageTk.PhotoImage(close_image)
+
+    # Load the Solara image
+    solara_image = Image.open(solara_image_file).convert("RGBA")
+    solara_image = solara_image.resize((300, 150))  # Resize if necessary
+    solara_photo = ImageTk.PhotoImage(solara_image)
 except Exception as e:
     print(f"Error loading images: {e}")
     root.destroy()
@@ -186,6 +206,16 @@ home_button.place_forget()
 # Create the close button
 close_button = tk.Button(root, image=close_image, borderwidth=0, command=close_window)
 close_button.place(x=510, y=10)
+
+# Solara image label (initially hidden)
+solara_image_label = tk.Label(root, image=solara_photo)
+solara_image_label.place_forget()
+
+# Description label (initially hidden, with custom font and outline)
+description_label = tk.Label(root, text="Solara is a new Roblox executor level 3\nand yet has been proved not to be a rat", 
+                             font=('Arial', 12), fg='white')
+description_label.config(bg='black', highlightbackground="dark blue", highlightthickness=2)
+description_label.place_forget()
 
 root.bind('<Button-1>', on_drag_start)
 root.bind('<B1-Motion>', on_drag_motion)
