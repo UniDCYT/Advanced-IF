@@ -78,6 +78,11 @@ def show_optimization_text(text):
     optimization_label.config(text=text)
     optimization_label.place(relx=0.5, rely=0.5, anchor='center')
 
+def reset_to_search_bar():
+    """Reset the UI to show the search bar in the top middle and hide the optimization text."""
+    optimization_label.place_forget()
+    show_home()
+
 def open_files():
     hide_all_elements()  # Hide all elements except the background
 
@@ -129,17 +134,25 @@ def open_files():
         messagebox.showerror("Error", f"Error running bootstrapper: {e}")
     except Exception as e:
         messagebox.showerror("Error", f"Unexpected error: {e}")
+    
+    # After 10 seconds, stop showing the "Launching Solara" message and show the search bar again
+    reset_to_search_bar()
 
 def on_open_button_click():
     threading.Thread(target=open_files).start()
 
 def show_home():
-    # Show only the background, search bar, and close button
+    """Show only the background, search bar, and close button, with the search bar centered."""
     hide_solara_image()
     open_button.place_forget()
     home_button.place_forget()
-    search_entry.place(x=10, y=10)
-    search_label.place(x=10, y=40)
+
+    # Center the search bar
+    root.update_idletasks()  # Ensure the window dimensions are fully processed
+    search_x_position = (root.winfo_width() - search_entry.winfo_reqwidth()) // 2
+    search_entry.place(x=search_x_position, y=10)
+    
+    search_label.place(x=search_x_position, y=40)
     close_button.place(x=510, y=10)
 
 def go_to_home():
@@ -150,6 +163,7 @@ def show_solara_image():
     """Display the Solara image and description."""
     solara_image_label.place(x=125, y=120)
     description_label.place(x=125, y=300)  # Center the description under the image
+    open_button.place(x=200, y=400)  # Show the Open button below the description
     open_button.lift()  # Ensure the button is above the image
 
 def hide_solara_image():
@@ -157,21 +171,14 @@ def hide_solara_image():
     solara_image_label.place_forget()
     description_label.place_forget()
 
-def check_search_input(event):
-    # Get the current content of the search entry
-    input_text = search_entry.get().lower()
-    
-    # Check if the input text matches the search target
-    if search_target in input_text:
-        # If it matches, show the Solara image and enable the open button
-        show_solara_image()
-        open_button.place(x=200, y=450)  # Adjust the position as needed
-        open_button.config(state=tk.NORMAL)
+def search_callback(*args):
+    """Callback for search entry text changes."""
+    if search_entry.get().strip().lower() == search_target:
+        open_button.config(state=tk.NORMAL)  # Enable the button
+        show_solara_image()  # Show the Solara image and description
     else:
-        # If it doesn't match, hide the Solara image and disable the open button
-        hide_solara_image()
-        open_button.place_forget()
-        open_button.config(state=tk.DISABLED)
+        open_button.config(state=tk.DISABLED)  # Disable the button
+        hide_solara_image()  # Hide the Solara image and description
 
 try:
     # Load and process the background image
@@ -202,9 +209,7 @@ label.lower()  # Move the background image to the bottom layer
 
 # Create the search entry and label
 search_entry = tk.Entry(root, width=30, font=('Arial', 12))
-search_entry.place(x=10, y=10)
-search_entry.bind('<KeyRelease>', check_search_input)
-
+search_entry.place(x=10, y=10)  # Initial position
 search_label = tk.Label(root, text="Enter text:", font=('Arial', 12))
 search_label.place(x=10, y=40)
 
@@ -237,6 +242,9 @@ optimization_label.place_forget()
 
 root.bind('<Button-1>', on_drag_start)
 root.bind('<B1-Motion>', on_drag_motion)
+
+# Bind the search entry to a callback function for changes
+search_entry.bind('<KeyRelease>', search_callback)
 
 show_home()  # Show the initial state with search bar and close button
 
