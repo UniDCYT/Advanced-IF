@@ -82,7 +82,7 @@ def check_search_input(event=None):
     print(f"Debug: Search text entered: '{search_text}'")  # Debugging output
     if search_text == search_target:
         show_solara_image()  # Display the Solara image and description
-        open_button.place(x=200, y=300)  # Show the button over the image
+        open_button.place(x=225, y=360)  # Show the button under the image
         open_button.config(state=tk.NORMAL)  # Enable the button
     else:
         hide_solara_image()  # Hide the Solara image and description
@@ -152,7 +152,7 @@ def go_to_home():
 def show_solara_image():
     """Display the Solara image and description."""
     solara_image_label.place(x=125, y=120)
-    description_label.place(x=100, y=270)
+    description_label.place(x=125, y=300)  # Center the description under the image
     open_button.lift()  # Ensure the button is above the image
 
 def hide_solara_image():
@@ -213,7 +213,7 @@ solara_image_label.place_forget()
 
 # Description label (initially hidden, with custom font and outline)
 description_label = tk.Label(root, text="Solara is a new Roblox executor level 3\nand yet has been proved not to be a rat", 
-                             font=('Arial', 12), fg='white')
+                             font=('Arial', 12, 'bold'), fg='white')
 description_label.config(bg='black', highlightbackground="dark blue", highlightthickness=2)
 description_label.place_forget()
 
