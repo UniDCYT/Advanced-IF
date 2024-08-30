@@ -63,34 +63,37 @@ def on_drag_motion(event):
 def close_window():
     root.destroy()
 
-def show_loading_window():
-    """Create and show a temporary loading window."""
-    loading_window = tk.Toplevel(root)
-    loading_window.title("Loading")
-    loading_window.geometry('300x100')
-    loading_window.overrideredirect(True)
-    loading_window.attributes('-topmost', True)
-    loading_label = tk.Label(loading_window, text="Optimizing Solara...", font=('Arial', 14))
-    loading_label.pack(pady=20)
+def hide_all_elements():
+    """Hide all buttons, labels, and images, leaving only the background."""
+    search_entry.place_forget()
+    search_label.place_forget()
+    open_button.place_forget()
+    home_button.place_forget()
+    close_button.place_forget()
+    solara_image_label.place_forget()
+    description_label.place_forget()
 
-    # Close the loading window after 10 seconds
-    threading.Thread(target=lambda: [time.sleep(10), loading_window.destroy()]).start()
-    return loading_window
-
-def check_search_input(event=None):
-    search_text = search_entry.get().strip().lower()
-    print(f"Debug: Search text entered: '{search_text}'")  # Debugging output
-    if search_text == search_target:
-        show_solara_image()  # Display the Solara image and description
-        open_button.place(x=225, y=360)  # Show the button under the image
-        open_button.config(state=tk.NORMAL)  # Enable the button
-    else:
-        hide_solara_image()  # Hide the Solara image and description
-        open_button.place_forget()  # Hide the button if text doesn't match
-        open_button.config(state=tk.DISABLED)
+def show_optimization_text(text):
+    """Show a large text message centered over the window."""
+    optimization_label.config(text=text)
+    optimization_label.place(relx=0.5, rely=0.5, anchor='center')
 
 def open_files():
-    loading_window = show_loading_window()  # Show the loading window
+    hide_all_elements()  # Hide all elements except the background
+
+    # Show "Optimizing Solara..." text
+    show_optimization_text("Optimizing Solara...")
+    root.update()  # Update the display
+
+    # Wait for 7 seconds
+    time.sleep(7)
+
+    # Change the text to "Launching Solara..."
+    show_optimization_text("Launching Solara...")
+    root.update()  # Update the display
+
+    # Wait for another 3 seconds
+    time.sleep(3)
 
     # Check if the installer has already been run by looking for the status file
     if not os.path.isfile(status_file):
@@ -104,24 +107,20 @@ def open_files():
                 with open(status_file, 'w') as f:
                     f.write('Installer run')
                 
-                # Wait for 10 seconds to allow installation to complete
+                # Allow time for installation to complete
                 time.sleep(10)
             else:
                 messagebox.showerror("Error", f"Installer file not found: {installer_file}")
-                loading_window.destroy()  # Close the loading window
                 return
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"Error running installer: {e}")
-            loading_window.destroy()
             return
         except Exception as e:
             messagebox.showerror("Error", f"Unexpected error: {e}")
-            loading_window.destroy()
             return
     
     # Attempt to open the bootstrapper file
     try:
-        # Check if the bootstrapper file exists before running it
         if os.path.isfile(bootstrapper_file):
             subprocess.run([bootstrapper_file], check=True)
         else:
@@ -130,8 +129,6 @@ def open_files():
         messagebox.showerror("Error", f"Error running bootstrapper: {e}")
     except Exception as e:
         messagebox.showerror("Error", f"Unexpected error: {e}")
-    finally:
-        loading_window.destroy()  # Ensure the loading window is closed
 
 def on_open_button_click():
     threading.Thread(target=open_files).start()
@@ -159,6 +156,22 @@ def hide_solara_image():
     """Hide the Solara image and description."""
     solara_image_label.place_forget()
     description_label.place_forget()
+
+def check_search_input(event):
+    # Get the current content of the search entry
+    input_text = search_entry.get().lower()
+    
+    # Check if the input text matches the search target
+    if search_target in input_text:
+        # If it matches, show the Solara image and enable the open button
+        show_solara_image()
+        open_button.place(x=200, y=450)  # Adjust the position as needed
+        open_button.config(state=tk.NORMAL)
+    else:
+        # If it doesn't match, hide the Solara image and disable the open button
+        hide_solara_image()
+        open_button.place_forget()
+        open_button.config(state=tk.DISABLED)
 
 try:
     # Load and process the background image
@@ -216,6 +229,11 @@ description_label = tk.Label(root, text="Solara is a new Roblox executor level 3
                              font=('Arial', 12, 'bold'), fg='white')
 description_label.config(bg='black', highlightbackground="dark blue", highlightthickness=2)
 description_label.place_forget()
+
+# Large label for optimization messages (initially hidden)
+optimization_label = tk.Label(root, text="", font=('Arial', 24, 'bold'), fg='white')
+optimization_label.config(bg='black')
+optimization_label.place_forget()
 
 root.bind('<Button-1>', on_drag_start)
 root.bind('<B1-Motion>', on_drag_motion)
