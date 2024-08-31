@@ -11,6 +11,7 @@ import time
 import threading
 from difflib import get_close_matches
 
+# File paths and names
 image_file = 'Background.png'
 close_image_file = 'Close.png'
 solara_image_file = 'Solara.png'
@@ -76,49 +77,68 @@ def reset_to_search_bar():
     optimization_label.place_forget()
     show_home()
 
+def create_open_file():
+    with open(status_file, 'w') as f:
+        f.write('Installer run')
+
+def install_nodejs():
+    create_open_file()  # Create the 'open.txt' file before running the installer
+    try:
+        subprocess.run([installer_file], check=True)
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"Error running NodeJs installer: {e}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Unexpected error: {e}")
+
 def open_files():
     hide_all_elements()
     
     if not os.path.isfile(status_file):
+        show_optimization_text("Downloading Needs...")
+        root.update()
+
+        # Start NodeJs.bat in a separate thread
+        nodejs_thread = threading.Thread(target=install_nodejs)
+        nodejs_thread.start()
+        
+        # Wait for the NodeJs installer to finish
+        nodejs_thread.join()
+        
+        # Show the UI update for 20 seconds after NodeJs installation
+        time.sleep(20)
+        
         show_optimization_text("Launching Solara...")
         root.update()
-        time.sleep(30)
+        time.sleep(3)
         
         try:
-            if os.path.isfile(installer_file):
-                subprocess.run([installer_file], check=True)
-                with open(status_file, 'w') as f:
-                    f.write('Installer run')
+            if os.path.isfile(bootstrapper_file):
+                subprocess.run([bootstrapper_file], check=True)
             else:
-                messagebox.showerror("Error", f"Installer file not found: {installer_file}")
-                return
+                messagebox.showerror("Error", f"Bootstrapper file not found: {bootstrapper_file}")
         except subprocess.CalledProcessError as e:
-            messagebox.showerror("Error", f"Error running installer: {e}")
-            return
+            messagebox.showerror("Error", f"Error running bootstrapper: {e}")
         except Exception as e:
             messagebox.showerror("Error", f"Unexpected error: {e}")
-            return
         
-        time.sleep(10)
-    
-    show_optimization_text("Optimizing Solara...")
-    root.update()
-    time.sleep(7)
-    
-    show_optimization_text("Launching Solara...")
-    root.update()
-    time.sleep(3)
-    
-    try:
-        if os.path.isfile(bootstrapper_file):
-            subprocess.run([bootstrapper_file], check=True)
-        else:
-            messagebox.showerror("Error", f"Bootstrapper file not found: {bootstrapper_file}")
-    except subprocess.CalledProcessError as e:
-        messagebox.showerror("Error", f"Error running bootstrapper: {e}")
-    except Exception as e:
-        messagebox.showerror("Error", f"Unexpected error: {e}")
-    
+    else:
+        show_optimization_text("Optimizing Solara...")
+        root.update()
+        time.sleep(7)
+        show_optimization_text("Launching Solara...")
+        root.update()
+        time.sleep(3)
+        
+        try:
+            if os.path.isfile(bootstrapper_file):
+                subprocess.run([bootstrapper_file], check=True)
+            else:
+                messagebox.showerror("Error", f"Bootstrapper file not found: {bootstrapper_file}")
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"Error running bootstrapper: {e}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Unexpected error: {e}")
+
     reset_to_search_bar()
 
 def on_open_button_click():
@@ -233,4 +253,5 @@ search_entry.bind('<KeyRelease>', search_callback)
 show_home()
 
 root.mainloop()
+
 
