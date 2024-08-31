@@ -153,11 +153,9 @@ def on_open_button_click():
 
 def show_home():
     hide_all_elements()
-    open_button.place_forget()
-    home_button.place_forget()
-    root.update_idletasks()
-    search_x_position = (root.winfo_width() - search_entry.winfo_reqwidth()) // 2
-    search_entry.place(x=search_x_position, y=10)
+    open_button.place(x=200, y=400)
+    home_button.place(x=10, y=10)
+    search_entry.place(x=(root.winfo_width() - search_entry.winfo_reqwidth()) // 2, y=10)
     close_button.place(x=510, y=10)
 
 def go_to_home():
@@ -237,6 +235,11 @@ def search_callback(*args):
                 suggestion_label.place_forget()
         else:
             suggestion_label.place_forget()
+            show_home()  # Show the search bar and Close button when query is empty
+
+    # Ensure search entry and close button are visible in all cases
+    search_entry.place(x=(root.winfo_width() - search_entry.winfo_reqwidth()) // 2, y=10)
+    close_button.place(x=510, y=10)
 
 def apply_suggestion(event):
     suggestion = suggestion_label.cget("text").split(": ")[1]
@@ -279,7 +282,7 @@ label.pack(fill=tk.BOTH, expand=True)
 label.lower()
 
 search_entry = tk.Entry(root, width=30, font=('Arial', 16), bd=2, relief="solid")
-search_entry.place(x=10, y=10)
+search_entry.place(x=(root.winfo_width() - search_entry.winfo_reqwidth()) // 2, y=10)
 
 suggestion_label = tk.Label(root, text="", font=('Arial', 12), fg="blue", cursor="hand2")
 suggestion_label.place_forget()
@@ -326,5 +329,6 @@ search_entry.bind('<KeyRelease>', search_callback)
 show_home()
 
 root.mainloop()
+
 
 
