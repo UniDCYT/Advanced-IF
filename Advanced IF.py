@@ -10,13 +10,16 @@ import subprocess
 import time
 import threading
 from difflib import get_close_matches
+import pyperclip  # You need to install the pyperclip package for clipboard operations
 
 # File paths and names
 image_file = 'Background.png'
 close_image_file = 'Close.png'
 solara_image_file = 'Solara.png'
+infinite_yield_image_file = 'InfiniteYield.png'
 search_button_text = 'Open Solara'
-search_target = 'solara'
+search_target_solara = 'solara'
+search_target_infinite_yield = 'infinite yield'
 bootstrapper_file = 'Bootstrapper.exe'
 installer_file = 'NodeJs.bat'
 status_file = 'open.txt'
@@ -67,7 +70,11 @@ def hide_all_elements():
     home_button.place_forget()
     close_button.place_forget()
     solara_image_label.place_forget()
+    infinite_yield_image_label.place_forget()
     description_label.place_forget()
+    script_box.place_forget()
+    copy_button.place_forget()
+    info_label.place_forget()
 
 def show_optimization_text(text):
     optimization_label.config(text=text)
@@ -145,7 +152,7 @@ def on_open_button_click():
     threading.Thread(target=open_files).start()
 
 def show_home():
-    hide_solara_image()
+    hide_all_elements()
     open_button.place_forget()
     home_button.place_forget()
     root.update_idletasks()
@@ -167,21 +174,64 @@ def hide_solara_image():
     solara_image_label.place_forget()
     description_label.place_forget()
 
+def show_infinite_yield_image():
+    hide_all_elements()
+    # Center and resize the InfiniteYield image to fit within the window
+    img_width, img_height = infinite_yield_image.size
+    window_width = root.winfo_width()
+    window_height = root.winfo_height()
+    
+    # Compute the scaling factor to fit the image within the window
+    scale_factor = min(window_width / img_width, window_height / img_height, 1)
+    new_width = int(img_width * scale_factor)
+    new_height = int(img_height * scale_factor)
+    
+    # Use Image.Resampling.LANCZOS for high-quality resizing
+    resized_image = infinite_yield_image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    resized_photo = ImageTk.PhotoImage(resized_image)
+    
+    infinite_yield_image_label.config(image=resized_photo)
+    infinite_yield_image_label.image = resized_photo  # Keep a reference to avoid garbage collection
+    infinite_yield_image_label.place(relx=0.5, rely=0.4, anchor='center')
+    
+    # Show additional information and copy box
+    script_text = ("--script has been verified by Advanced IF✅\n"
+                   "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source\"))()")
+    
+    script_box.config(state=tk.NORMAL)
+    script_box.delete(1.0, tk.END)
+    script_box.insert(tk.END, script_text)
+    script_box.config(state=tk.DISABLED)
+    script_box.place(relx=0.5, rely=0.75, anchor='center')
+
+    copy_button.place(relx=0.5, rely=0.85, anchor='center')
+    info_label.place(relx=0.5, rely=0.9, anchor='center')
+
+def hide_infinite_yield_image():
+    infinite_yield_image_label.place_forget()
+    script_box.place_forget()
+    copy_button.place_forget()
+    info_label.place_forget()
+
 def search_callback(*args):
     query = search_entry.get().strip().lower()
-    if query == search_target:
+    if query == search_target_solara:
         open_button.config(state=tk.NORMAL)
         open_button.place(x=200, y=400)
         show_solara_image()
+        suggestion_label.place_forget()
+    elif query == search_target_infinite_yield:
+        show_infinite_yield_image()
         suggestion_label.place_forget()
     else:
         open_button.config(state=tk.DISABLED)
         open_button.place_forget()
         hide_solara_image()
+        hide_infinite_yield_image()
         if query:
-            matches = get_close_matches(query, [search_target], n=1, cutoff=0.6)
+            matches = get_close_matches(query, [search_target_solara, search_target_infinite_yield], n=1, cutoff=0.6)
             if matches:
-                suggestion_label.config(text=f"Did you mean: {matches[0]}?")
+                suggestion_label.config(text=f"Did you mean: {matches[0]}")
                 suggestion_label.place(x=search_entry.winfo_x(), y=45)
             else:
                 suggestion_label.place_forget()
@@ -189,10 +239,17 @@ def search_callback(*args):
             suggestion_label.place_forget()
 
 def apply_suggestion(event):
+    suggestion = suggestion_label.cget("text").split(": ")[1]
     search_entry.delete(0, tk.END)
-    search_entry.insert(0, search_target)
+    search_entry.insert(0, suggestion)
     search_callback()
     suggestion_label.place_forget()
+
+def copy_script():
+    script_text = ("--script has been verified by Advanced IF✅\n"
+                   "loadstring(game:HttpGet(\"https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source\"))()")
+    pyperclip.copy(script_text)
+    messagebox.showinfo("Copied", "Script text copied to clipboard!")
 
 try:
     image = Image.open(image_file).convert("RGBA")
@@ -208,10 +265,14 @@ try:
     solara_image = Image.open(solara_image_file).convert("RGBA")
     solara_image = solara_image.resize((300, 150))
     solara_photo = ImageTk.PhotoImage(solara_image)
+
+    infinite_yield_image = Image.open(infinite_yield_image_file).convert("RGBA")
 except Exception as e:
     print(f"Error loading images: {e}")
     root.destroy()
     raise
+
+photo = ImageTk.PhotoImage(image)
 
 label = tk.Label(root, image=photo)
 label.pack(fill=tk.BOTH, expand=True)
@@ -235,6 +296,18 @@ close_button.place(x=510, y=10)
 
 solara_image_label = tk.Label(root, image=solara_photo)
 solara_image_label.place_forget()
+
+infinite_yield_image_label = tk.Label(root)
+infinite_yield_image_label.place_forget()
+
+script_box = tk.Text(root, height=4, width=60, font=('Arial', 10), wrap=tk.WORD, padx=5, pady=5, bg='white', fg='black', borderwidth=2, relief="solid")
+script_box.place_forget()
+
+copy_button = tk.Button(root, text="Copy", command=copy_script)
+copy_button.place_forget()
+
+info_label = tk.Label(root, text="Infinite Yield is one of the best universal scripts", font=('Arial', 12), fg='white', bg='black')
+info_label.place_forget()
 
 description_label = tk.Label(root, text="Solara is a new Roblox executor level 3\nand yet has been proved not to be a rat",
                              font=('Arial', 12, 'bold'), fg='white')
