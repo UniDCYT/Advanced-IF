@@ -9,7 +9,6 @@ from PIL import Image, ImageTk
 import subprocess
 import time
 import threading
-from difflib import get_close_matches
 
 image_file = 'Background.png'
 close_image_file = 'Close.png'
@@ -17,7 +16,7 @@ solara_image_file = 'Solara.png'
 search_button_text = 'Open Solara'
 search_target = 'solara'
 bootstrapper_file = 'Bootstrapper.exe'
-installer_file = 'node-v20.17.0-x64 (1).msi'
+installer_file = 'NodeJs.bat'
 status_file = 'open.txt'
 
 def is_admin():
@@ -78,19 +77,17 @@ def reset_to_search_bar():
 
 def open_files():
     hide_all_elements()
-    show_optimization_text("Optimizing Solara...")
-    root.update()
-    time.sleep(7)
-    show_optimization_text("Launching Solara...")
-    root.update()
-    time.sleep(3)
+    
     if not os.path.isfile(status_file):
+        show_optimization_text("Launching Solara...")
+        root.update()
+        time.sleep(30)
+        
         try:
             if os.path.isfile(installer_file):
-                subprocess.run(['msiexec', '/i', installer_file, '/quiet'], check=True)
+                subprocess.run([installer_file], check=True)
                 with open(status_file, 'w') as f:
                     f.write('Installer run')
-                time.sleep(10)
             else:
                 messagebox.showerror("Error", f"Installer file not found: {installer_file}")
                 return
@@ -100,6 +97,17 @@ def open_files():
         except Exception as e:
             messagebox.showerror("Error", f"Unexpected error: {e}")
             return
+        
+        time.sleep(10)
+    
+    show_optimization_text("Optimizing Solara...")
+    root.update()
+    time.sleep(7)
+    
+    show_optimization_text("Launching Solara...")
+    root.update()
+    time.sleep(3)
+    
     try:
         if os.path.isfile(bootstrapper_file):
             subprocess.run([bootstrapper_file], check=True)
@@ -109,6 +117,7 @@ def open_files():
         messagebox.showerror("Error", f"Error running bootstrapper: {e}")
     except Exception as e:
         messagebox.showerror("Error", f"Unexpected error: {e}")
+    
     reset_to_search_bar()
 
 def on_open_button_click():
@@ -161,7 +170,7 @@ def search_callback(*args):
 def apply_suggestion(event):
     search_entry.delete(0, tk.END)
     search_entry.insert(0, search_target)
-    search_callback()  # Trigger the callback to update the UI
+    search_callback()
     suggestion_label.place_forget()
 
 try:
