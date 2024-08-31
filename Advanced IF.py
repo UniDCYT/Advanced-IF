@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 import subprocess
 import time
 import threading
+from difflib import get_close_matches
 
 image_file = 'Background.png'
 close_image_file = 'Close.png'
