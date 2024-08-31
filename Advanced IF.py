@@ -153,7 +153,7 @@ def on_open_button_click():
 
 def show_home():
     hide_all_elements()
-    open_button.place(x=200, y=400)
+    open_button.place_forget()  # Ensure the button is hidden by default
     home_button.place(x=10, y=10)
     search_entry.place(x=(root.winfo_width() - search_entry.winfo_reqwidth()) // 2, y=10)
     close_button.place(x=510, y=10)
@@ -215,7 +215,6 @@ def search_callback(*args):
     query = search_entry.get().strip().lower()
     if query == search_target_solara:
         open_button.config(state=tk.NORMAL)
-        open_button.place(x=200, y=400)
         show_solara_image()
         suggestion_label.place_forget()
     elif query == search_target_infinite_yield:
@@ -329,6 +328,7 @@ search_entry.bind('<KeyRelease>', search_callback)
 show_home()
 
 root.mainloop()
+
 
 
 
