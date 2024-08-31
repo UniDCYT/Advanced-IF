@@ -9,6 +9,7 @@ from PIL import Image, ImageTk
 import subprocess
 import time
 import threading
+from difflib import get_close_matches
 
 # File and directory configurations
 image_file = 'Background.png'
@@ -68,7 +69,7 @@ def close_window():
 def hide_all_elements():
     """Hide all buttons, labels, and images, leaving only the background."""
     search_entry.place_forget()
-    search_label.place_forget()
+    suggestion_label.place_forget()  # Hide suggestion label
     open_button.place_forget()
     home_button.place_forget()
     close_button.place_forget()
@@ -154,7 +155,6 @@ def show_home():
     search_x_position = (root.winfo_width() - search_entry.winfo_reqwidth()) // 2
     search_entry.place(x=search_x_position, y=10)
     
-    search_label.place(x=search_x_position, y=40)
     close_button.place(x=510, y=10)
 
 def go_to_home():
@@ -175,12 +175,27 @@ def hide_solara_image():
 
 def search_callback(*args):
     """Callback for search entry text changes."""
-    if search_entry.get().strip().lower() == search_target:
+    query = search_entry.get().strip().lower()
+    matches = get_close_matches(query, [search_target], n=1, cutoff=0.6)
+
+    if query == search_target:
         open_button.config(state=tk.NORMAL)  # Enable the button
         show_solara_image()  # Show the Solara image and description
+        suggestion_label.place_forget()  # Hide suggestion label
     else:
         open_button.config(state=tk.DISABLED)  # Disable the button
         hide_solara_image()  # Hide the Solara image and description
+        if matches:
+            suggestion_label.config(text=f"Did you mean: {matches[0]}?")
+            suggestion_label.place(x=search_entry.winfo_x(), y=45)
+        else:
+            suggestion_label.place_forget()  # Hide suggestion label if no matches
+
+def apply_suggestion(event):
+    """Apply the suggestion to the search entry."""
+    search_entry.delete(0, tk.END)
+    search_entry.insert(0, search_target)
+    suggestion_label.place_forget()  # Hide suggestion label after applying
 
 try:
     # Load and process the background image
@@ -209,11 +224,14 @@ label = tk.Label(root, image=photo)
 label.pack(fill=tk.BOTH, expand=True)
 label.lower()  # Move the background image to the bottom layer
 
-# Create the search entry and label
-search_entry = tk.Entry(root, width=30, font=('Arial', 12))
+# Create the search entry
+search_entry = tk.Entry(root, width=30, font=('Arial', 16), bd=2, relief="solid")
 search_entry.place(x=10, y=10)  # Initial position
-search_label = tk.Label(root, text="Enter text:", font=('Arial', 12))
-search_label.place(x=10, y=40)
+
+# Create the suggestion label (initially hidden)
+suggestion_label = tk.Label(root, text="", font=('Arial', 12), fg="blue", cursor="hand2")
+suggestion_label.place_forget()
+suggestion_label.bind("<Button-1>", apply_suggestion)  # Bind click event
 
 # Create the open button, initially hidden and disabled
 open_button = tk.Button(root, text=search_button_text, command=on_open_button_click, state=tk.DISABLED)
