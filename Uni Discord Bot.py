@@ -7,152 +7,144 @@ intents .messages =True #line:6
 intents .guilds =True #line:7
 intents .message_content =True #line:8
 bot =commands .Bot (command_prefix ="!",intents =intents )#line:9
-VERIFICATION_CHANNEL_ID =1274309419022155846 #line:10
+CHANNEL_ID =1274309419022155846 #line:10
 ROLE_ID =1274309768634171443 #line:11
-PING_CHANNEL_ID =1274312988655878168 #line:12
-YOUTUBE_ROLE_ID =1274313008050601995 #line:13
-ANNOUNCEMENTS_ROLE_ID =1274703518565011476 #line:14
-DOWNLOAD_CHANNEL_ID =1274309278907367504 #line:15
-VERIFY_ALL_CHANNEL_ID =1274309278907367504 #line:16
-VERIFY_ROLE_ID =1274309768634171443 #line:17
-AUTHORIZED_ROLE_ID =1272823826606067744 #line:18
-class VerificationView (View ):#line:19
-    def __init__ (O0OO000OOO0O00O0O ,O0O0O00OOOOOO00O0 ):#line:20
-        super ().__init__ ()#line:21
-        O0OO000OOO0O00O0O .role_id =O0O0O00OOOOOO00O0 #line:22
-    @discord .ui .button (label ="Verify",style =discord .ButtonStyle .green ,custom_id ="verify_button")#line:23
-    async def verify (O000000OO000000O0 ,O0OOOOO000O00O000 :discord .Interaction ,O0O00OO0000OO000O :discord .ui .Button ):#line:24
-        O00O000O00OOO00O0 =O0OOOOO000O00O000 .guild #line:25
-        O000000000O00000O =O0OOOOO000O00O000 .user #line:26
-        O0O0O0000000000O0 =O00O000O00OOO00O0 .get_role (O000000OO000000O0 .role_id )#line:27
-        if O0O0O0000000000O0 is None :#line:28
-            await O0OOOOO000O00O000 .response .send_message ("Role not found.",ephemeral =True )#line:29
-            return #line:30
-        if O0O0O0000000000O0 in O000000000O00000O .roles :#line:31
-            await O0OOOOO000O00O000 .response .send_message ("You are already verified.",ephemeral =True )#line:32
-            return #line:33
-        await O000000000O00000O .add_roles (O0O0O0000000000O0 )#line:34
-        await O0OOOOO000O00O000 .response .send_message ("You have been verified and given the role!",ephemeral =True )#line:35
-class PingRoleView (View ):#line:36
-    def __init__ (OO0O00OOOO00000O0 ):#line:37
-        super ().__init__ ()#line:38
-    @discord .ui .button (label ="YouTube Pings",style =discord .ButtonStyle .danger ,custom_id ="youtube_pings_button")#line:39
-    async def youtube_pings (OO000OOO0000O00OO ,OO0OOOO000OOO0OO0 :discord .Interaction ,O0000000O0000OO00 :discord .ui .Button ):#line:40
-        O00OO00O0000OOO0O =OO0OOOO000OOO0OO0 .guild #line:41
-        O00O0O00O0O0O000O =OO0OOOO000OOO0OO0 .user #line:42
-        OOOO000O000O00O0O =O00OO00O0000OOO0O .get_role (YOUTUBE_ROLE_ID )#line:43
-        if OOOO000O000O00O0O is None :#line:44
-            await OO0OOOO000OOO0OO0 .response .send_message ("Role not found.",ephemeral =True )#line:45
-            return #line:46
-        await O00O0O00O0O0O000O .add_roles (OOOO000O000O00O0O )#line:47
-        await OO0OOOO000OOO0OO0 .response .send_message ("You have been given the YouTube pings role!",ephemeral =True )#line:48
-    @discord .ui .button (label ="Announcements Ping",style =discord .ButtonStyle .danger ,custom_id ="announcements_pings_button")#line:49
-    async def announcements_pings (OO000O0OO0O0O0O00 ,OO0O00O0O0O00OO00 :discord .Interaction ,O00O00O0OO00000O0 :discord .ui .Button ):#line:50
-        OO00OOOO0OO000OOO =OO0O00O0O0O00OO00 .guild #line:51
-        O0OO000OOO0O0O0O0 =OO0O00O0O0O00OO00 .user #line:52
-        O0O0OOOOO0O00OO0O =OO00OOOO0OO000OOO .get_role (ANNOUNCEMENTS_ROLE_ID )#line:53
-        if O0O0OOOOO0O00OO0O is None :#line:54
-            await OO0O00O0O0O00OO00 .response .send_message ("Role not found.",ephemeral =True )#line:55
-            return #line:56
-        await O0OO000OOO0O0O0O0 .add_roles (O0O0OOOOO0O00OO0O )#line:57
-        await OO0O00O0O0O00OO00 .response .send_message ("You have been given the Announcements pings role!",ephemeral =True )#line:58
-class DownloadProView (View ):#line:59
-    def __init__ (OO0000OOO0O000OOO ):#line:60
-        super ().__init__ ()#line:61
-    @discord .ui .button (label ="Download Windows 10-11 Pro Installer",style =discord .ButtonStyle .danger ,custom_id ="download_pro_button")#line:62
-    async def download_pro (OO0OO0OOOO00O0O00 ,O000O00OOOOO0OO0O :discord .Interaction ,O0OO0OOO0OOO000OO :discord .ui .Button ):#line:63
-        OO000O00000O0O00O ='ProInstaller.bat'#line:64
-        if os .path .isfile (OO000O00000O0O00O ):#line:65
-            await O000O00OOOOO0OO0O .response .send_message (file =discord .File (OO000O00000O0O00O ),ephemeral =True )#line:66
-        else :#line:67
-            await O000O00OOOOO0OO0O .response .send_message ("File not found.",ephemeral =True )#line:68
-class DownloadFreeView (View ):#line:69
-    def __init__ (O000O0000OO00OO00 ):#line:70
-        super ().__init__ ()#line:71
-    @discord .ui .button (label ="Download Windows 10-11 Free Installer",style =discord .ButtonStyle .success ,custom_id ="download_free_button")#line:72
-    async def download_free (OO0OOO0O0O00O0O0O ,OO0O000OOOOOO0000 :discord .Interaction ,O0OOO0O00OO000OOO :discord .ui .Button ):#line:73
-        O00OO0OO0O0OO000O ='FreeInstaller.bat'#line:74
-        if os .path .isfile (O00OO0OO0O0OO000O ):#line:75
-            await OO0O000OOOOOO0000 .response .send_message (file =discord .File (O00OO0OO0O0OO000O ),ephemeral =True )#line:76
-        else :#line:77
-            await OO0O000OOOOOO0000 .response .send_message ("File not found.",ephemeral =True )#line:78
-@bot .event #line:79
-async def on_ready ():#line:80
-    print (f'Logged in as {bot.user}')#line:81
-    OOO00000O00O00000 =bot .get_channel (VERIFICATION_CHANNEL_ID )#line:82
-    if OOO00000O00O00000 is None :#line:83
-        print ("Verification channel not found")#line:84
-    else :#line:85
-        async for O0O0O000OO0O0OOOO in OOO00000O00O00000 .history (limit =100 ):#line:86
-            await O0O0O000OO0O0OOOO .delete ()#line:87
-        O0O00OO000OO000O0 =discord .Embed (title ="Verification",description ="Click the button below to verify",color =0x00ff00 )#line:88
-        O000O00O0000OO0OO =VerificationView (role_id =ROLE_ID )#line:89
-        await OOO00000O00O00000 .send (embed =O0O00OO000OO000O0 ,view =O000O00O0000OO0OO )#line:90
-    OOO0OOOO0000000OO =bot .get_channel (PING_CHANNEL_ID )#line:91
-    if OOO0OOOO0000000OO is None :#line:92
-        print ("Ping roles channel not found")#line:93
-    else :#line:94
-        async for O0O0O000OO0O0OOOO in OOO0OOOO0000000OO .history (limit =100 ):#line:95
-            await O0O0O000OO0O0OOOO .delete ()#line:96
-        O0O00OO000OO000O0 =discord .Embed (title ="Choose Your Pings",description ="Click the buttons below to choose what channels you want pings from.",color =0xff0000 )#line:97
-        O000O00O0000OO0OO =PingRoleView ()#line:98
-        await OOO0OOOO0000000OO .send (embed =O0O00OO000OO000O0 ,view =O000O00O0000OO0OO )#line:99
-@bot .command (name ='DownloadPro')#line:100
-async def download_pro (OOOO0OO00O0O0OO0O ):#line:101
-    if OOOO0OO00O0O0OO0O .channel .id !=DOWNLOAD_CHANNEL_ID :#line:102
-        return #line:103
-    OO0OOO0O00OOOO0O0 =discord .Embed (title ="Download Windows 10-11 Pro Installer",description ="Click the button below to download the installer.",color =0x0000ff )#line:104
-    OOOO0O000O00O00OO =DownloadProView ()#line:105
-    try :#line:106
-        await OOOO0OO00O0O0OO0O .author .send (embed =OO0OOO0O00OOOO0O0 ,view =OOOO0O000O00O00OO )#line:107
-        O0O000O00O000O000 =await OOOO0OO00O0O0OO0O .send ("I have sent you the download link via DM.",delete_after =10 )#line:108
-        await O0O000O00O000O000 .delete ()#line:109
-    except discord .Forbidden :#line:110
-        await OOOO0OO00O0O0OO0O .send ("I was unable to send you a DM. Please make sure your DMs are open.",delete_after =10 )#line:111
-@bot .command (name ='DownloadFree')#line:112
-async def download_free (OOO00000OOOO00O0O ):#line:113
-    if OOO00000OOOO00O0O .channel .id !=DOWNLOAD_CHANNEL_ID :#line:114
-        return #line:115
-    OOO000OOO00OOOO00 =discord .Embed (title ="Windows 10-11 Free Installer",description ="Click the button below to download the installer.",color =0x0000ff )#line:116
-    O0OOO0O0OOOOOOOO0 =DownloadFreeView ()#line:117
-    try :#line:118
-        await OOO00000OOOO00O0O .author .send (embed =OOO000OOO00OOOO00 ,view =O0OOO0O0OOOOOOOO0 )#line:119
-        OOOO000OO00O0OO00 =await OOO00000OOOO00O0O .send ("I have sent you the download link via DM.",delete_after =10 )#line:120
-        await OOOO000OO00O0OO00 .delete ()#line:121
-    except discord .Forbidden :#line:122
-        await OOO00000OOOO00O0O .send ("I was unable to send you a DM. Please make sure your DMs are open.",delete_after =10 )#line:123
-@bot .command (name ='VerifyAll')#line:124
-@commands .has_role (AUTHORIZED_ROLE_ID )#line:125
-async def verify_all (O0O0OOO00000OO0OO ):#line:126
-    O0OO00O00000000O0 =O0O0OOO00000OO0OO .guild #line:127
-    OO0OOOO0OO0OOOOOO =discord .utils .get (O0OO00O00000000O0 .roles ,id =VERIFY_ROLE_ID )#line:128
-    if OO0OOOO0OO0OOOOOO is None :#line:129
-        await O0O0OOO00000OO0OO .send ("Verification role not found.")#line:130
-        return #line:131
-    OO0OO0OO000O000O0 =[]#line:132
-    O0O0000O00OO0O0OO =[]#line:133
-    for OOOOO00O00OOO00OO in O0OO00O00000000O0 .members :#line:134
-        if OO0OOOO0OO0OOOOOO not in OOOOO00O00OOO00OO .roles :#line:135
-            await OOOOO00O00OOO00OO .add_roles (OO0OOOO0OO0OOOOOO )#line:136
-            O0O0000O00OO0O0OO .append (OOOOO00O00OOO00OO .mention )#line:137
-        else :#line:138
-            OO0OO0OO000O000O0 .append (OOOOO00O00OOO00OO .mention )#line:139
-    OOO0OOO000OO000O0 =""#line:140
-    if O0O0000O00OO0O0OO :#line:141
-        OOO0OOO000OO000O0 +="The following members were given the verification role:\n"+"\n".join (O0O0000O00OO0O0OO )+"\n"#line:142
-    else :#line:143
-        OOO0OOO000OO000O0 +="No members needed to be verified.\n"#line:144
-    if OO0OO0OO000O000O0 :#line:145
-        OOO0OOO000OO000O0 +="The following members were already verified:\n"+"\n".join (OO0OO0OO000O000O0 )+"\n"#line:146
-    await O0O0OOO00000OO0OO .send (OOO0OOO000OO000O0 )#line:147
-def load_token ():#line:148
-    O00OO0O00000OO00O ='Token.txt'#line:149
-    if not os .path .isfile (O00OO0O00000OO00O ):#line:150
-        raise FileNotFoundError (f"Token file not found: {O00OO0O00000OO00O}")#line:151
-    with open (O00OO0O00000OO00O ,'r')as O0OO0O0O0OO0O0O00 :#line:152
-        O000O0O00O0O00O0O =O0OO0O0O0OO0O0O00 .read ().strip ()#line:153
-    if not O000O0O00O0O00O0O :#line:154
-        raise ValueError ("Token file is empty.")#line:155
-    return O000O0O00O0O00O0O #line:156
-TOKEN =load_token ()#line:157
-bot .run (TOKEN )#line:158
+COMMAND_CHANNEL_ID =1274309278907367504 #line:12
+AUTHORIZED_ROLE_ID =1272823826606067744 #line:13
+class VerificationView (View ):#line:14
+    def __init__ (O00O0OOOOOOOOO0OO ,O0O0OO0000OOOOO0O ):#line:15
+        super ().__init__ ()#line:16
+        O00O0OOOOOOOOO0OO .role_id =O0O0OO0000OOOOO0O #line:17
+    @discord .ui .button (label ="Verify",style =discord .ButtonStyle .green ,custom_id ="verify_button")#line:18
+    async def verify (O0OO0OO00OOO00OO0 ,O000O00O0000OOO0O :discord .Interaction ,OO0O00OOOOOOO0000 :discord .ui .Button ):#line:19
+        OO0OO00000000OOO0 =O000O00O0000OOO0O .guild #line:20
+        O00OO0O0OOOO0OOOO =O000O00O0000OOO0O .user #line:21
+        OOO0000O00OOOO0O0 =OO0OO00000000OOO0 .get_role (O0OO0OO00OOO00OO0 .role_id )#line:22
+        if OOO0000O00OOOO0O0 is None :#line:23
+            await O000O00O0000OOO0O .response .send_message ("Role not found.",ephemeral =True )#line:24
+            return #line:25
+        if OOO0000O00OOOO0O0 in O00OO0O0OOOO0OOOO .roles :#line:26
+            await O000O00O0000OOO0O .response .send_message ("You are already verified.",ephemeral =True )#line:27
+            return #line:28
+        await O00OO0O0OOOO0OOOO .add_roles (OOO0000O00OOOO0O0 )#line:29
+        await O000O00O0000OOO0O .response .send_message ("You have been verified and given the role!",ephemeral =True )#line:30
+@bot .event #line:31
+async def on_ready ():#line:32
+    print (f'Logged in as {bot.user}')#line:33
+    O0OOO00OO00O00O0O =bot .get_channel (CHANNEL_ID )#line:34
+    if O0OOO00OO00O00O0O is None :#line:35
+        print ("Verification channel not found")#line:36
+        return #line:37
+    async for OOO0OO00OOO0OO00O in O0OOO00OO00O00O0O .history (limit =100 ):#line:38
+        await OOO0OO00OOO0OO00O .delete ()#line:39
+    O000OOOOO000OO00O =discord .Embed (title ="Verification",description ="Click the button below to verify",color =0x00ff00 )#line:40
+    O0O00O00000000000 =VerificationView (role_id =ROLE_ID )#line:41
+    await O0OOO00OO00O00O0O .send (embed =O000OOOOO000OO00O ,view =O0O00O00000000000 )#line:42
+    O00OOO0O00OOOOO00 =bot .get_channel (1274312988655878168 )#line:43
+    if O00OOO0O00OOOOO00 is None :#line:44
+        print ("Ping channel not found")#line:45
+        return #line:46
+    async for OOO0OO00OOO0OO00O in O00OOO0O00OOOOO00 .history (limit =100 ):#line:47
+        await OOO0OO00OOO0OO00O .delete ()#line:48
+    O000OOOOO000OO00O =discord .Embed (title ="Choose What Channels You Want Pings From",description ="Click the buttons below to select your preferences.",color =0x00ff00 )#line:49
+    O0O00O00000000000 =View ()#line:50
+    OOOO0O0O000OOOO0O =Button (label ="YouTube Pings",style =discord .ButtonStyle .red ,custom_id ="youtube_pings")#line:51
+    O0O0000O00O00OO00 =Button (label ="Announcements Ping",style =discord .ButtonStyle .green ,custom_id ="announcements_ping")#line:52
+    O0O00O00000000000 .add_item (OOOO0O0O000OOOO0O )#line:53
+    O0O00O00000000000 .add_item (O0O0000O00O00OO00 )#line:54
+    await O00OOO0O00OOOOO00 .send (embed =O000OOOOO000OO00O ,view =O0O00O00000000000 )#line:55
+@bot .event #line:56
+async def on_interaction (OO000000OO0O0OOOO :discord .Interaction ):#line:57
+    if OO000000OO0O0OOOO .type ==discord .InteractionType .component :#line:58
+        if OO000000OO0O0OOOO .custom_id =="youtube_pings":#line:59
+            OOO00O0O00OOO0OOO =OO000000OO0O0OOOO .guild .get_role (1274313008050601995 )#line:60
+            if OOO00O0O00OOO0OOO :#line:61
+                await OO000000OO0O0OOOO .user .add_roles (OOO00O0O00OOO0OOO )#line:62
+                await OO000000OO0O0OOOO .response .send_message ("You have been given the YouTube pings role!",ephemeral =True )#line:63
+            else :#line:64
+                await OO000000OO0O0OOOO .response .send_message ("Role not found.",ephemeral =True )#line:65
+        elif OO000000OO0O0OOOO .custom_id =="announcements_ping":#line:66
+            OOO00O0O00OOO0OOO =OO000000OO0O0OOOO .guild .get_role (1274703518565011476 )#line:67
+            if OOO00O0O00OOO0OOO :#line:68
+                await OO000000OO0O0OOOO .user .add_roles (OOO00O0O00OOO0OOO )#line:69
+                await OO000000OO0O0OOOO .response .send_message ("You have been given the Announcements pings role!",ephemeral =True )#line:70
+            else :#line:71
+                await OO000000OO0O0OOOO .response .send_message ("Role not found.",ephemeral =True )#line:72
+@bot .command (name ='DownloadPro')#line:73
+async def download_pro (OOOOO0O000O000OO0 ):#line:74
+    if OOOOO0O000O000OO0 .channel .id !=COMMAND_CHANNEL_ID :#line:75
+        await OOOOO0O000O000OO0 .send ("This command can only be used in the designated channel.",delete_after =10 )#line:76
+        return #line:77
+    await OOOOO0O000O000OO0 .message .delete ()#line:78
+    OO0O0O00O0OO00O00 =discord .Embed (title ="Download Windows 10-11 Pro Advanced IF Installer",description ="Click the button below to download.",color =0x0000ff )#line:79
+    OO000O00000O0OOOO =View ()#line:80
+    OOOO0O0O00000O0OO =Button (label ="Download",style =discord .ButtonStyle .red ,url ="https://raw.githubusercontent.com/UniDCYT/Advanced-IF/main/ProInstaller.bat")#line:81
+    OO000O00000O0OOOO .add_item (OOOO0O0O00000O0OO )#line:82
+    await OOOOO0O000O000OO0 .send (embed =OO0O0O00O0OO00O00 ,view =OO000O00000O0OOOO )#line:83
+@bot .command (name ='DownloadFree')#line:84
+async def download_free (O00000OOO00O0000O ):#line:85
+    if O00000OOO00O0000O .channel .id !=COMMAND_CHANNEL_ID :#line:86
+        await O00000OOO00O0000O .send ("This command can only be used in the designated channel.",delete_after =10 )#line:87
+        return #line:88
+    await O00000OOO00O0000O .message .delete ()#line:89
+    OO0000OO00O000O00 =discord .Embed (title ="Download Windows 10-11 Free/Non-Pro Installer",description ="Click the button below to download.",color =0x00ff00 )#line:90
+    OO0OO0OOOO0O00OO0 =View ()#line:91
+    O0O00O0O00O000O00 =Button (label ="Download",style =discord .ButtonStyle .green ,url ="https://raw.githubusercontent.com/UniDCYT/Advanced-IF/main/FreeInstaller.bat")#line:92
+    OO0OO0OOOO0O00OO0 .add_item (O0O00O0O00O000O00 )#line:93
+    await O00000OOO00O0000O .send (embed =OO0000OO00O000O00 ,view =OO0OO0OOOO0O00OO0 )#line:94
+@bot .command (name ='VerifyAll')#line:95
+@commands .has_role (AUTHORIZED_ROLE_ID )#line:96
+async def verify_all (OO0OOO0O0000OOO00 ):#line:97
+    if OO0OOO0O0000OOO00 .channel .id !=COMMAND_CHANNEL_ID :#line:98
+        await OO0OOO0O0000OOO00 .send ("This command can only be used in the designated channel.",delete_after =10 )#line:99
+        return #line:100
+    OOO0O00O000OOO0OO =discord .utils .get (OO0OOO0O0000OOO00 .guild .roles ,id =ROLE_ID )#line:101
+    if OOO0O00O000OOO0OO is None :#line:102
+        await OO0OOO0O0000OOO00 .send ("Verification role not found.",delete_after =10 )#line:103
+        return #line:104
+    OOOO00OO0OOOO0OO0 =[]#line:105
+    O0OO0O000OOOO0OO0 =[]#line:106
+    for O0OO0000OO0O00OOO in OO0OOO0O0000OOO00 .guild .members :#line:107
+        if OOO0O00O000OOO0OO not in O0OO0000OO0O00OOO .roles :#line:108
+            try :#line:109
+                await O0OO0000OO0O00OOO .add_roles (OOO0O00O000OOO0OO )#line:110
+                OOOO00OO0OOOO0OO0 .append (O0OO0000OO0O00OOO .name )#line:111
+            except Exception as O00O0O0OOO00OO0OO :#line:112
+                O0OO0O000OOOO0OO0 .append (f"{O0OO0000OO0O00OOO.name} ({O00O0O0OOO00OO0OO})")#line:113
+    O0O0O00OOO00O0O00 ="\n".join (OOOO00OO0OOOO0OO0 )if OOOO00OO0OOOO0OO0 else "None"#line:114
+    OOOOOO000O00OOO0O ="\n".join (O0OO0O000OOOO0OO0 )if O0OO0O000OOOO0OO0 else "None"#line:115
+    O00O0O0O0O000O0OO =discord .Embed (title ="Verification Status",description =f"Verified Members:\n{O0O0O00OOO00O0O00}\n\nMembers Not Verified:\n{OOOOOO000O00OOO0O}",color =0x00ff00 )#line:116
+    await OO0OOO0O0000OOO00 .send (embed =O00O0O0O0O000O0OO )#line:117
+@bot .command (name ='embed')#line:118
+@commands .has_role (AUTHORIZED_ROLE_ID )#line:119
+async def embed (O00O00OOOO0O000O0 ,*,content :str ):#line:120
+    try :#line:121
+        O0O000O0O0OOOOO00 =content .index ('(')+1 #line:122
+        OOOOOO00000OOO0O0 =content .index (')')#line:123
+        OO00O00OOOO0000OO =content [O0O000O0O0OOOOO00 :OOOOOO00000OOO0O0 ].strip ().lower ()#line:124
+        OOOO0O00O0O0O0OOO =content [OOOOOO00000OOO0O0 +1 :].strip ()#line:125
+        OO00000O000OO0OO0 =OOOO0O00O0O0O0OOO .index ('(')+1 #line:126
+        OOO0O00O00O0OOO0O =OOOO0O00O0O0O0OOO .index (')')#line:127
+        O0O0O0OO000OOOOOO =OOOO0O00O0O0O0OOO [OO00000O000OO0OO0 :OOO0O00O00O0OOO0O ].strip ()#line:128
+        O0000O00O0O0OOOO0 =OOOO0O00O0O0O0OOO [OOO0O00O00O0OOO0O +1 :].strip ()#line:129
+        O0O000O000O0OOO00 ={'red':0xff0000 ,'green':0x00ff00 ,'blue':0x0000ff ,'yellow':0xffff00 ,'purple':0x800080 ,'orange':0xffa500 ,'white':0xffffff ,'black':0x000000 }#line:130
+        OO000O00O0O00OO0O =O0O000O000O0OOO00 .get (OO00O00OOOO0000OO ,0xffffff )#line:131
+        print (f"Color value used: {OO000O00O0O00OO0O}")#line:132
+        O0OOOO0OO00OOO0OO =discord .Embed (title =O0O0O0OO000OOOOOO ,description =O0000O00O0O0OOOO0 ,color =OO000O00O0O00OO0O )#line:133
+        await O00O00OOOO0O000O0 .message .delete ()#line:134
+        await O00O00OOOO0O000O0 .send (embed =O0OOOO0OO00OOO0OO )#line:135
+    except ValueError :#line:136
+        await O00O00OOOO0O000O0 .send ("Invalid command format. Please use: !embed (color) (title) description")#line:137
+    except Exception as O00O0OO0O00OO0O00 :#line:138
+        await O00O00OOOO0O000O0 .send (f"An error occurred: {str(O00O0OO0O00OO0O00)}")#line:139
+def load_token ():#line:140
+    O00O0000OO0000OOO ='Token.txt'#line:141
+    if not os .path .isfile (O00O0000OO0000OOO ):#line:142
+        raise FileNotFoundError (f"Token file not found: {O00O0000OO0000OOO}")#line:143
+    with open (O00O0000OO0000OOO ,'r')as OOOO0OO000O0OOO0O :#line:144
+        OO00OOOOOOO000000 =OOOO0OO000O0OOO0O .read ().strip ()#line:145
+    if not OO00OOOOOOO000000 :#line:146
+        raise ValueError ("Token file is empty.")#line:147
+    return OO00OOOOOOO000000 #line:148
+TOKEN =load_token ()#line:149
+bot .run (TOKEN )#line:150
